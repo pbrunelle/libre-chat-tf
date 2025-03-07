@@ -38,8 +38,26 @@ cat .env.example \
   | sed "s/# BEDROCK_AWS_ACCESS_KEY_ID=.*/BEDROCK_AWS_ACCESS_KEY_ID=${aws_access_key_id}/" \
   | sed "s/# BEDROCK_AWS_SECRET_ACCESS_KEY=.*/BEDROCK_AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}/" \
   | sed "s/# BEDROCK_AWS_MODELS.*/BEDROCK_AWS_MODELS=amazon.nova-lite-v1:0,amazon.nova-pro-v1:0,us.anthropic.claude-3-5-sonnet-20240620-v1:0,us.anthropic.claude-3-5-sonnet-20241022-v2:0,us.anthropic.claude-3-7-sonnet-20250219-v1:0,us.meta.llama3-2-11b-instruct-v1:0/" \
+  | sed "s/GOOGLE_KEY=user_provided/GOOGLE_KEY=${gemini_api_key}/" \
   > .env
 echo "DEBUG=librechat:*" >> .env
+
+cat > librechat.yaml << EOF
+version: 1.2.1
+cache: true
+endpoints:
+  azureOpenAI:
+    titleModel: "current_model"
+    groups:
+    - group: "eastus"
+      instanceName: "pierr-m7xbubjd-eastus2"
+      apiKey: "${azure_openai_api_key}"
+      version: "2025-01-01-preview"
+      baseURL: "https://pierr-m7xbubjd-eastus2.cognitiveservices.azure.com/openai/deployments/gpt-4o-mini"
+      models:
+        gpt-4o-mini:
+          deploymentName: "gpt-4o-mini"
+EOF
 
 # Add Docker's official GPG key:
 retry 3 5 sudo apt-get update
