@@ -43,17 +43,6 @@ resource "google_compute_firewall" "allow_librechat" {
   source_ranges = ["0.0.0.0/0"]
 }
 
-resource "google_service_account" "librechat_sa" {
-  account_id   = "librechat-service-account"
-  display_name = "LibreChat Service Account"
-}
-
-resource "google_project_iam_member" "secret_accessor" {
-  project = var.project_id
-  role    = "roles/secretmanager.secretAccessor"
-  member  = "serviceAccount:${google_service_account.librechat_sa.email}"
-}
-
 # Create the LibreChat VM instance
 resource "google_compute_instance" "librechat" {
   name         = "librechat-server"
@@ -71,10 +60,6 @@ resource "google_compute_instance" "librechat" {
     }
   }
   metadata_startup_script = local_file.startup_script.content
-  service_account {
-    email  = google_service_account.librechat_sa.email
-    scopes = ["cloud-platform"]
-  }
   allow_stopping_for_update = true
 }
 
