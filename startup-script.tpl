@@ -37,6 +37,15 @@ endpoints:
           deploymentName: "gpt-4o-mini"
 EOF
 
+cat > docker-compose.override.yaml << EOF
+services:
+  api:
+    volumes:
+    - type: bind
+      source: ./librechat.yaml
+      target: /app/librechat.yaml
+EOF
+
 # Add Docker's official GPG key:
 sudo apt-get -y update
 sudo apt-get -y install ca-certificates curl
