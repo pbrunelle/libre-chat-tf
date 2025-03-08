@@ -4,17 +4,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "librechat_credentials" {
-  description = "Credentials for LibreChat configuration"
-  type = object({
-    azure_openai_api_key      = string
-    gemini_api_key            = string
-    aws_access_key_id         = string
-    aws_secret_access_key     = string
-  })
-  sensitive = true
-}
-
 variable "machine_type" {
   description = "The machine type for the VM instance"
   type        = string
