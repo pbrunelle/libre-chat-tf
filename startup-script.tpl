@@ -5,29 +5,7 @@ set -e
 exec > >(tee /var/log/startup-script.log) 2>&1
 echo "Starting LibreChat setup script at $(date)"
 
-# Function to retry commands
-function retry {
-  local retries=$1
-  local wait_time=$2
-  shift 2
-  local count=0
-  
-  until "$@"; do
-    exit_code=$?
-    count=$((count + 1))
-    
-    if [ $count -lt $retries ]; then
-      echo "Command failed. Retry $count/$retries in $wait_time seconds..."
-      sleep $wait_time
-    else
-      echo "Command failed after $retries retries. Exiting..."
-      return $exit_code
-    fi
-  done
-  return 0
-}
-
-retry 3 5 git clone https://github.com/danny-avila/LibreChat.git
+git clone https://github.com/danny-avila/LibreChat.git
 cd LibreChat
 
 cat .env.example \
@@ -60,24 +38,24 @@ endpoints:
 EOF
 
 # Add Docker's official GPG key:
-retry 3 5 sudo apt-get update
-retry 3 5 sudo apt-get install ca-certificates curl
-retry 3 5 sudo install -m 0755 -d /etc/apt/keyrings
-retry 3 5 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-retry 3 5 sudo chmod a+r /etc/apt/keyrings/docker.asc
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
 
 # Add the repository to Apt sources:
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
   $(. /etc/os-release && echo "$${UBUNTU_CODENAME:-$$VERSION_CODENAME}") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-retry 3 5 sudo apt-get update
+sudo apt-get update
 
 # Install Docker
-retry 3 5 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Make sure Docker is ok
-retry 3 5 sudo docker run hello-world
+sudo docker run hello-world
 
 echo "Starting LibreChat..."
 sudo docker compose up -d
