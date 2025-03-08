@@ -23,9 +23,9 @@ data "google_secret_manager_secret_version" "gemini_api_key" {
 
 resource "local_file" "startup_script" {
   content = templatefile("${path.module}/startup-script.tpl", {
-    azure_openai_api_key      = data.google_secret_manager_secret_version.azure_openai_key.secret_data,
-    aws_access_key_id         = data.google_secret_manager_secret_version.bedrock_access_key.secret_data,
-    aws_secret_access_key     = data.google_secret_manager_secret_version.bedrock_secret_key.secret_data,
+    azure_openai_api_key      = data.google_secret_manager_secret_version.azure_openai_api_key.secret_data,
+    aws_access_key_id         = data.google_secret_manager_secret_version.aws_access_key_id.secret_data,
+    aws_secret_access_key     = data.google_secret_manager_secret_version.aws_secret_access_key.secret_data,
     gemini_api_key            = data.google_secret_manager_secret_version.gemini_api_key.secret_data
   })
   filename        = "${path.module}/generated-startup-script.sh"
